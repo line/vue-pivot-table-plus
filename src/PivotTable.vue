@@ -8,11 +8,13 @@
     <div v-else-if="data.length === 0" class="alert alert-warning" role="alert">
       {{ noDataWarningText }}
     </div>
-    <table v-else class="table table-bordered">
-      
+    <div v-else-if="getNumOfCells() > numOfCellsLimitation" class="alert alert-warning" role="alert">
+      {{ overNumOfCellsWarningText }}
+    </div>
+    <table v-else class="table table-hover table-bordered table-sm">
       <!-- Table header -->
       <thead>
-        <tr v-for="(colField, colFieldIndex) in colFields" :key="colField.key" v-if="colField.showHeader === undefined || colField.showHeader">
+        <tr v-for="(colField, colFieldIndex) in colFields" :key="'header-col-' + colField.label" v-if="colField.showHeader === void 0 || colField.showHeader" class="bg-light">
           <!-- Top left dead zone -->
           <th v-if="colFieldIndex === firstColFieldHeaderIndex && rowHeaderSize > 0" :colspan="rowHeaderSize" :rowspan="colHeaderSize"></th>
           <!-- Column headers -->
@@ -33,7 +35,7 @@
       <tbody>
         <tr v-for="(row, rowIndex) in rows" :key="JSON.stringify(row)">
           <!-- Row headers -->
-          <th v-for="(rowField, rowFieldIndex) in rowFields" :key="rowField.key" :rowspan="spanSize(rows, rowFieldIndex, rowIndex)"  v-if="(rowField.showHeader === undefined || rowField.showHeader) && spanSize(rows, rowFieldIndex, rowIndex) !== 0">
+          <th v-for="(rowField, rowFieldIndex) in rowFields" :key="'header-row-' + rowField.label" :rowspan="spanSize(rows, rowFieldIndex, rowIndex)"  v-if="(rowField.showHeader === void 0 || rowField.showHeader) && spanSize(rows, rowFieldIndex, rowIndex) !== 0">
             <slot v-if="rowField.headerSlotName" :name="rowField.headerSlotName" v-bind:value="row[rowFieldIndex]">
               Missing slot <code>{{ rowField.headerSlotName }}</code>
             </slot>
@@ -47,7 +49,7 @@
             <template v-else>{{ values[JSON.stringify({ col, row })] }}</template>
           </td>
           <!-- Row footers (if slots are provided) -->
-          <th v-for="(rowField, rowFieldIndex) in rowFieldsReverse" :key="rowField.key" :rowspan="spanSize(rows, rowFields.length - rowFieldIndex - 1, rowIndex)" v-if="rowField.showFooter && spanSize(rows, rowFields.length - 1 - rowFieldIndex, rowIndex) !== 0">
+          <th v-for="(rowField, rowFieldIndex) in rowFieldsReverse" :key="'footer-row-' + rowField.label" :rowspan="spanSize(rows, rowFields.length - rowFieldIndex - 1, rowIndex)" v-if="rowField.showFooter && spanSize(rows, rowFields.length - 1 - rowFieldIndex, rowIndex) !== 0">
             <slot v-if="rowField.footerSlotName" :name="rowField.footerSlotName" v-bind:value="row[rowFields.length - rowFieldIndex - 1]">
               Missing slot <code>{{ rowField.footerSlotName }}</code>
             </slot>
@@ -60,7 +62,7 @@
 
       <!-- Table footer -->
       <tfoot>
-        <tr v-for="(colField, colFieldIndex) in colFieldsReverse" :key="colField.key" v-if="colField.showFooter">
+        <tr v-for="(colField, colFieldIndex) in colFieldsReverse" :key="'footer-col-' + colField.label" v-if="colField.showFooter">
           <!-- Bottom left dead zone -->
           <th v-if="colFieldIndex === firstColFieldFooterIndex && rowHeaderSize > 0" :colspan="rowHeaderSize" :rowspan="colHeaderSize"></th>
           <!-- Column footers -->
@@ -82,25 +84,37 @@
 
 <script>
 import naturalSort from 'javascript-natural-sort'
+import { downloadTableWithTSV, downloadTableWithCSV } from './util'
 
 export default {
-  props: ['data', 'rowFields', 'colFields', 'reducer', 'noDataWarningText'],
   props: {
     data: {
       type: Array,
-      default: []
+      default: () => []
     },
     rowFields: {
       type: Array,
-      default: []
+      default: () => []
     },
     colFields: {
       type: Array,
-      default: []
+      default: () => []
     },
     reducer: {
       type: Function,
       default: (sum, item) => sum + 1
+    },
+    noDataWarningText: {
+      type: String,
+      default: 'No data to display.'
+    },
+    overNumOfCellsWarningText: {
+      type: String,
+      default: 'Too many cells. Please reduce the num of rows / cols.'
+    },
+    numOfCellsLimitation: {
+      type: Number,
+      default: 10000
     },
     noDataWarningText: {
       type: String,
@@ -111,28 +125,62 @@ export default {
       default: false
     }
   },
-  data: function() {
-    return {
-      values: {} // Alas vue does not support js Map
+  computed: {
+    // Watched target properties for re-calculation
+    calculationTriggers: function () {
+      return [this.rowFields, this.colFields, this.reducer]
+    },
+    // Reversed props for footer iterators
+    colFieldsReverse: function () {
+      return this.colFields.slice().reverse()
+    },
+    rowFieldsReverse: function () {
+      return this.rowFields.slice().reverse()
+    },
+    // Number of col header rows
+    colHeaderSize: function () {
+      return this.colFields.filter(colField => colField.showHeader === void 0 || colField.showHeader).length
+    },
+    // Number of col footer rows
+    colFooterSize: function () {
+      return this.colFields.filter(colField => colField.showFooter).length
+    },
+    // Number of row header columns
+    rowHeaderSize: function () {
+      return this.rowFields.filter(rowField => rowField.showHeader === void 0 || rowField.showHeader).length
+    },
+    // Number of row footer columns
+    rowFooterSize: function () {
+      return this.rowFields.filter(rowField => rowField.showFooter).length
+    },
+    // Index of the first column field header to show - used for table header dead zones
+    firstColFieldHeaderIndex: function () {
+      return this.colFields.findIndex(colField => colField.showHeader === void 0 || colField.showHeader)
+    },
+    // Index of the first column field footer to show - used for table footer dead zones
+    firstColFieldFooterIndex: function () {
+      return this.colFieldsReverse.findIndex(colField => colField.showFooter)
     }
   },
-  computed: {
-    cols: function() {
+  methods: {
+    getNumOfCells: function () { // this.cols / this.rows are not reactive
+      return this.cols.length * this.rows.length
+    },
+    calculateCols: function () {
       const cols = []
 
-      const extractColsRecursive = (depth, filters) => {
+      const extractColsRecursive = (data, depth, filters) => {
         const getter = this.colFields[depth].getter
         const sort = this.colFields[depth].sort || naturalSort
-        const values = [...new Set(this.filteredData({ data: this.data, colFilters: filters }).map(item => getter(item)))].sort(sort)
+        const values = [...new Set(data.map(getter))].sort(sort)
 
         values.forEach(value => {
           // Build new filter hash
-          const valueFilters = Object.assign({}, filters)
-          valueFilters[depth] = value
-
+          const valueFilters = { ...filters, [depth]: value }
+          const filteredData = this.filterDataByValue({ data, getter, filter: value })
           // Recursive call
           if (depth + 1 < this.colFields.length) {
-            extractColsRecursive(depth + 1, valueFilters)
+            extractColsRecursive(filteredData, depth + 1, valueFilters)
           } else {
             cols.push(valueFilters)
           }
@@ -140,29 +188,27 @@ export default {
       }
 
       if (this.colFields.length > 0) {
-        extractColsRecursive(0, {})
+        extractColsRecursive(this.data, 0, {})
       } else {
         cols.push({})
       }
-
       return cols
     },
-    rows: function() {
+    calculateRows: function () {
       const rows = []
 
-      const extractRowsRecursive = (depth, filters) => {
+      const extractRowsRecursive = (data, depth, filters) => {
         const getter = this.rowFields[depth].getter
         const sort = this.rowFields[depth].sort || naturalSort
-        const values = [...new Set(this.filteredData({ data: this.data, rowFilters: filters }).map(item => getter(item)))].sort(sort)
+        const values = [...new Set(data.map(getter))].sort(sort)
 
         values.forEach(value => {
           // Build new filter hash
-          const valueFilters = Object.assign({}, filters)
-          valueFilters[depth] = value
-
+          const valueFilters = { ...filters, [depth]: value }
+          const filteredData = this.filterDataByValue({ data, getter, filter: value })
           // Recursive call
           if (depth + 1 < this.rowFields.length) {
-            extractRowsRecursive(depth + 1, valueFilters)
+            extractRowsRecursive(filteredData, depth + 1, valueFilters)
           } else {
             rows.push(valueFilters)
           }
@@ -170,54 +216,25 @@ export default {
       }
 
       if (this.rowFields.length > 0) {
-        extractRowsRecursive(0, {})
+        extractRowsRecursive(this.data, 0, {})
       } else {
         rows.push({})
       }
-
       return rows
     },
-    // Compound property for watch single callback
-    colsAndRows: function() {
-      return [this.cols, this.rows]
+    filterDataByValue: function ({ data = [], getter, filter = undefined }) {
+      // Filter data with getters
+      if (filter !== void 0) {
+        return data.filter(item => getter(item) === filter)
+      } else {
+        return data.slice()
+      }
     },
-    // Reversed props for footer iterators
-    colFieldsReverse: function() {
-      return this.colFields.slice().reverse()
-    },
-    rowFieldsReverse: function() {
-      return this.rowFields.slice().reverse()
-    },
-    // Number of col header rows
-    colHeaderSize: function() {
-      return this.colFields.filter(colField => colField.showHeader === undefined || colField.showHeader).length
-    },
-    // Number of col footer rows
-    colFooterSize: function() {
-      return this.colFields.filter(colField => colField.showFooter).length
-    },
-    // Number of row header columns
-    rowHeaderSize: function() {
-      return this.rowFields.filter(rowField => rowField.showHeader === undefined || rowField.showHeader).length
-    },
-    // Number of row footer columns
-    rowFooterSize: function() {
-      return this.rowFields.filter(rowField => rowField.showFooter).length
-    },
-    // Index of the first column field header to show - used for table header dead zones
-    firstColFieldHeaderIndex: function() {
-      return this.colFields.findIndex(colField => colField.showHeader === undefined || colField.showHeader)
-    },
-    // Index of the first column field footer to show - used for table footer dead zones
-    firstColFieldFooterIndex: function() {
-      return this.colFieldsReverse.findIndex(colField => colField.showFooter)
-    }
-  },
-  methods: {
     // Get data filtered
-    filteredData: function({ data = [], colFilters = {}, rowFilters = {} }) {
+    filteredData: function ({ data = [], colFilters = {}, rowFilters = {} }) {
       // Prepare getters
-      const colGetters = {}, rowGetters = {}
+      const colGetters = {}
+      const rowGetters = {}
 
       for (const depth in colFilters) {
         colGetters[depth] = this.colFields[depth].getter
@@ -251,7 +268,7 @@ export default {
       })
     },
     // Get colspan/rowspan size
-    spanSize: function(values, fieldIndex, valueIndex) {      
+    spanSize: function (values, fieldIndex, valueIndex) {
       // If left value === current value
       // and top value === 0 (= still in the same top bracket)
       // The left td will take care of the display
@@ -275,36 +292,60 @@ export default {
       return size
     },
     // Called when cols/rows have changed => recompute values
-    computeValues: function() {
+    computeValues: function () {
       // Remove old values
       this.values = {}
+
+      if (this.getNumOfCells() > this.numOfCellsLimitation) {
+        // do not calculate if too many values
+        return
+      }
 
       // Compute new values
       this.rows.forEach(row => {
         const rowData = this.filteredData({ data: this.data, rowFilters: row })
         this.cols.forEach(col => {
           const data = this.filteredData({ data: rowData, colFilters: col })
-
           const key = JSON.stringify({ col, row })
           const value = data.reduce(this.reducer, 0)
           this.values[key] = value
         })
       })
+    },
+    saveTableWithText (format) {
+      switch (format) {
+      case 'csv':
+        downloadTableWithCSV(this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values)
+        break
+      case 'tsv':
+        downloadTableWithTSV(this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values)
+        break
+      default:
+        break
+      }
     }
   },
   watch: {
-    colsAndRows: function() {
+    calculationTriggers: function () {
+      this.rows = this.calculateRows()
+      this.cols = this.calculateCols()
       this.computeValues()
     }
   },
-  created: function() {
+  created: function () {
+    this.rows = this.calculateRows()
+    this.cols = this.calculateCols()
     this.computeValues()
   }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 td {
   min-width: 100px;
+}
+
+table thead th {
+  white-space: nowrap;
 }
 </style>

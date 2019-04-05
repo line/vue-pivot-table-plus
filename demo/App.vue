@@ -4,14 +4,15 @@
 
     <h2 class="border-bottom pb-2 mb-4">Pivot <small>(drag & drop UI + PivotTable)</small></h2>
 
+    <button class="mb-5" @click="() => defaultShowSettings = !defaultShowSettings">Toggle Settings</button>
+
     <div class="mb-5">
       <pivot
+        ref="pivot_table"
         :data="data"
-        :fields="fields"
-        :row-fields="rowFields"
-        :col-fields="colFields"
+        v-model="fields"
         :reducer="reducer"
-        :default-show-settings="defaultShowSettings"
+        :showSettings="defaultShowSettings"
       >
         <template slot="value" slot-scope="{ value }">
           {{ value | number }}
@@ -23,16 +24,18 @@
         </template>
       </pivot>
     </div>
+    <button class="btn btn-link" @click="downloadTable('csv')">Test to download table in CSV</button>
+    <button class="btn btn-link" @click="downloadTable('tsv')">Test to download table in TSV</button>
+    <div class="mb-5"></div>
 
     <h2 class="border-bottom pb-2 mb-4">PivotTable <small>(standalone)</small></h2>
-    
+
     <div class="mb-5">
-      <pivot-table
+      <pivot
         :data="asyncData"
-        :row-fields="rowFields"
-        :col-fields="colFields"
+        v-model="fields"
         :reducer="reducer"
-        :default-show-settings="defaultShowSettings"
+        :showSettings="defaultShowSettings"
         :is-data-loading="isDataLoading"
       >
         <template slot="value" slot-scope="{ value }">
@@ -49,7 +52,7 @@
             Loading...
           </div>
         </template>
-      </pivot-table>
+      </pivot>
     </div>
   </div>
 </template>
@@ -66,19 +69,21 @@ export default {
     return {
       data: data,
       asyncData: [],
-      fields: [],
-      rowFields: [{
-        getter: item => item.country,
-        label: 'Country'
-      }, {
-        getter: item => item.gender,
-        label: 'Gender',
-        headerSlotName: 'genderHeader'
-      }],
-      colFields: [{
-        getter: item => item.year,
-        label: 'Year'
-      }],
+      fields: {
+        availableFields: [],
+        rowFields: [{
+          getter: item => item.country,
+          label: 'Country'
+        }, {
+          getter: item => item.gender,
+          label: 'Gender',
+          headerSlotName: 'genderHeader'
+        }],
+        colFields: [{
+          getter: item => item.year,
+          label: 'Year'
+        }],
+      },
       reducer: (sum, item) => sum + item.count,
       defaultShowSettings: true,
       isDataLoading: false
@@ -99,11 +104,15 @@ export default {
       return value.replace(/\b\w/g, l => l.toUpperCase())
     }
   },
+  methods: {
+    downloadTable (format) {
+      this.$refs.pivot_table.downloadPivotTableData(format)
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-$enable-rounded: false;
 @import '~bootstrap/scss/bootstrap.scss';
 
 /* FontAwesome icons */
