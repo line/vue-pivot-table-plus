@@ -16,7 +16,7 @@ This project is modified based on [vue-pivot-table](https://github.com/MarketCon
 
 ## Install
 
-`npm install --save @linecorp/vue-pivot-table-plus` (temp)
+`npm install --save vue-pivot-table-plus` (temp)
 
 ## Usage
 
@@ -46,7 +46,7 @@ The component `Pivot` has an aggregation table (referred to as `PivotTable`) fro
 /* App.vue (js)*/
 // Import the needed component(s)
 import Vue from 'vue'
-import { Pivot } from '@linecorp/vue-pivot'
+import { Pivot } from 'vue-pivot-table-plus'
 
 export default Vue.extend({
   name: "app",

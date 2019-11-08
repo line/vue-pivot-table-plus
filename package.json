@@ -1,5 +1,5 @@
 {
-  "name": "@linecorp/vue-pivot",
+  "name": "vue-pivot-table-plus",
   "description": "A customized vue component for pivot table",
   "private": false,
   "version": "0.3.0",
