@@ -4,5 +4,8 @@ module.exports = {
       entry: 'demo/main.js',
       template: 'public/index.html'
     }
+  },
+  css: {
+    extract: false
   }
 }
