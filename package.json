@@ -2,9 +2,9 @@
   "name": "vue-pivot-table-plus",
   "description": "A customized vue component for pivot table",
   "private": false,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "LINE Corporation",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "repository": {
     "type": "git"
   },
@@ -12,7 +12,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "build:lib": "vue-cli-service build --target lib --name vue-pivot src/browser.js 2> /dev/null",
+    "build:lib": "vue-cli-service build --target lib --name vue-pivot-table-plus",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
