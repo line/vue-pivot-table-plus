@@ -40,8 +40,8 @@
         <draggable v-model="internal.rowFields" :options="{ group: 'fields' }" @start="_start" @end="_end" class="d-flex flex-column align-items-start drag-area border-primary" :class="dragAreaClass">
           <div v-for="field in internal.rowFields" :key="'row-' + field.label">
             <div class="btn btn-draggable btn-primary btn-sm btn-block d-flex align-items-center" v-b-tooltip.hover :title="field.label" @click="_fieldClicked(field.label)">
-                <div class="btn-label text-truncate mr-2">{{ field.label }}</div>
-                <div class="sort-dict" :class="{ '--desc': internal.fieldsOrder[field.label] === 'desc' }"/>
+              <div class="btn-label text-truncate mr-2">{{ field.label }}</div>
+              <div class="sort-dict" :class="{ '--desc': internal.fieldsOrder[field.label] === 'desc' }"/>
             </div>
           </div>
         </draggable>

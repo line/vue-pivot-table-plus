@@ -8,11 +8,11 @@
   "repository": {
     "type": "git"
   },
-  "main": "dist/vue-pivot.umd.js",
+  "main": "dist/vue-pivot-table-plus.umd.js",
+  "unpkg": "dist/vue-pivot-table-plus.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "build:lib": "vue-cli-service build --target lib --name vue-pivot-table-plus",
+    "build": "vue-cli-service build --target lib ./src/Pivot.vue",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
