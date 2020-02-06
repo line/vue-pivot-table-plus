@@ -2,13 +2,13 @@
   "name": "vue-pivot-table-plus",
   "description": "A customized vue component for pivot table",
   "private": false,
-  "version": "0.3.3",
+  "version": "0.3.4",
   "author": "LINE Corporation",
   "license": "Apache-2.0",
   "repository": {
     "type": "git"
   },
-  "main": "dist/vue-pivot-table-plus.umd.js",
+  "main": "dist/vue-pivot-table-plus.umd.min.js",
   "unpkg": "dist/vue-pivot-table-plus.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
