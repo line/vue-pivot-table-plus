@@ -16,7 +16,7 @@ This project is modified based on [vue-pivot-table](https://github.com/MarketCon
 
 ## Install
 
-`npm install --save vue-pivot-table-plus` (temp)
+`npm install --save vue-pivot-table-plus`
 
 ## Usage
 
@@ -30,13 +30,13 @@ The component `Pivot` has an aggregation table (referred to as `PivotTable`) fro
   <div id="app">
   ...
 
-    <pivot
+    <Pivot
       :data="data"
       v-model="fields"
       :reducer="reducer"
       :showSettings="defaultShowSettings"
       >
-    </pivot>
+    </Pivot>
   ...
 
 </template>
@@ -46,7 +46,7 @@ The component `Pivot` has an aggregation table (referred to as `PivotTable`) fro
 /* App.vue (js)*/
 // Import the needed component(s)
 import Vue from 'vue'
-import { Pivot } from 'vue-pivot-table-plus'
+import Pivot from 'vue-pivot-table-plus'
 
 export default Vue.extend({
   name: "app",
@@ -100,7 +100,7 @@ new Vue({
 Prop | Type | Default | Description
 -----|------|---------|------------
 `data` | `Array` | `[]` | Dataset to use in the pivot ; each element should be an object
-`fields` | `Object (v-model)` | `[]` | Information about pivot table. It includes available fields, row fields, column fields. You can receive the change of these information by watching this fields. Please consult the above example for usage.
+`fields` | `Object (v-model)` | `{}` | Information about pivot table. It includes available fields, row fields, column fields. You can receive the change of these information by watching this fields. Please consult the above example for usage.
 `reducer` | `function` | `(sum, item) => sum + 1` | Function applied to reduce `data` in the pivot table
 `tableHeight` | `Number` | `500px` | The height of table
 `default-show-settings` | `Boolean` | `true` | Show settings at component creation
