@@ -1,3 +1,4 @@
+import 'bootstrap'
 import Pivot from './Pivot.vue'
 import PivotTable from './PivotTable.vue'
 
