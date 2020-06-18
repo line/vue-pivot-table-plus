@@ -12,7 +12,7 @@
   "unpkg": "dist/vue-pivot-table-plus.min.js",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib ./src/Pivot.vue",
+    "build": "vue-cli-service build --target lib ./src/browser.js && rm ./dist/demo.html",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
