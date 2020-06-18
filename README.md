@@ -46,7 +46,7 @@ The component `Pivot` has an aggregation table (referred to as `PivotTable`) fro
 /* App.vue (js)*/
 // Import the needed component(s)
 import Vue from 'vue'
-import Pivot from 'vue-pivot-table-plus'
+import { Pivot } from 'vue-pivot-table-plus'
 
 export default Vue.extend({
   name: "app",
@@ -157,7 +157,6 @@ npm run build:lib
 - JavaScript
   - Vue ^2.6.10
   - jQuery ^3.3.1
-  - BootstrapVue **2.0.0-rc.13**
   - VueDraggable ^2.21.0
 
 ## License
