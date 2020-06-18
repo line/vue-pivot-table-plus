@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import Pivot from '../../src/Pivot'
+import { Pivot } from '../../src/browser.js'
 import data from './data'
 
 export default {
