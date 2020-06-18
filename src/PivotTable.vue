@@ -116,10 +116,6 @@ export default {
       type: Number,
       default: 10000
     },
-    noDataWarningText: {
-      type: String,
-      default: 'No data to display.'
-    },
     isDataLoading: {
       type: Boolean,
       default: false
