@@ -30,7 +30,7 @@
           </div>
         </draggable>
         <p v-if="internal.colFields.length === 0" class="drag-area-placeholder text-secondary">Drag fields here</p>
-        <div v-else class="drag-area-clear-button circle-background bg-primary" v-b-tooltip:hover title="Clear column fields" @click="_resetCols"></div>
+        <div v-else class="drag-area-clear-button circle-background bg-primary" data-toggle="tooltip" title="Clear column fields" @click="_resetCols"></div>
       </div>
     </div>
 
@@ -39,14 +39,14 @@
       <div class="left-col" v-if="showSettings">
         <draggable v-model="internal.rowFields" :options="{ group: 'fields' }" @start="_start" @end="_end" class="d-flex flex-column align-items-start drag-area border-primary" :class="dragAreaClass">
           <div v-for="field in internal.rowFields" :key="'row-' + field.label">
-            <div class="btn btn-draggable btn-primary btn-sm btn-block d-flex align-items-center" v-b-tooltip.hover :title="field.label" @click="_fieldClicked(field.label)">
+            <div class="btn btn-draggable btn-primary btn-sm btn-block d-flex align-items-center" data-toggle="tooltip" :title="field.label" @click="_fieldClicked(field.label)">
               <div class="btn-label text-truncate mr-2">{{ field.label }}</div>
               <div class="sort-dict" :class="{ '--desc': internal.fieldsOrder[field.label] === 'desc' }"/>
             </div>
           </div>
         </draggable>
         <p v-if="internal.rowFields.length === 0" class="drag-area-placeholder text-secondary">Drag fields here</p>
-        <div v-else class="drag-area-clear-button circle-background bg-primary" v-b-tooltip:hover title="Clear row fields" @click="_resetRows"></div>
+        <div v-else class="drag-area-clear-button circle-background bg-primary" data-toggle="tooltip" title="Clear row fields" @click="_resetRows"></div>
       </div>
 
       <!-- Table -->
@@ -62,7 +62,7 @@
         </pivot-table>
       </div>
 
-      <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-b-tooltip:hover title="Show menu"></div>
+      <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" data-toggle-second="tooltip" title="Show menu"></div>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
@@ -76,6 +76,14 @@
 import PivotTable from './PivotTable.vue'
 import naturalSort from 'javascript-natural-sort'
 import Draggable from 'vuedraggable'
+
+import $ from 'jquery'
+
+// enable tooltip
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  $('[data-toggle-second="tooltip"]').tooltip()
+})
 
 export default {
   name: 'vue-pivot',
