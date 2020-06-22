@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import 'bootstrap'
-import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import App from './App.vue'
-
-Vue.use(BootstrapVue)
 
 new Vue({
   render: h => h(App)
