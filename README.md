@@ -79,13 +79,10 @@ export default Vue.extend({
 
 ```js
 /* main.js */
-import Vue from "vue"
+import Vue from 'vue'
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import BootstrapVue from 'bootstrap-vue'
 import App from './App.vue'
-
-Vue.use(BootstrapVue)
 
 new Vue({
   render: h => h(App)
@@ -139,10 +136,10 @@ See https://vuejs.org/v2/guide/instance.html#Data-and-Methods.
 npm install
 
 # Serve with hot reload at localhost:8080
-npm run serve
+cd demo && npm run serve
 
 # Build js libraries in dist folder
-npm run build:lib
+npm run build
 ```
 
 ## Future features
@@ -158,6 +155,7 @@ npm run build:lib
   - Vue ^2.6.10
   - jQuery ^3.3.1
   - VueDraggable ^2.21.0
+  - BootstrapVue ^2.15.0
 
 ## License
 
