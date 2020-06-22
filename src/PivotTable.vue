@@ -16,7 +16,7 @@
       <thead>
         <tr v-for="(colField, colFieldIndex) in colFields" :key="'header-col-' + colField.label" v-if="colField.showHeader === void 0 || colField.showHeader" class="bg-light">
           <!-- Top left dead zone -->
-          <th v-if="colFieldIndex === firstColFieldHeaderIndex && rowHeaderSize > 0" :colspan="rowHeaderSize" :rowspan="colHeaderSize"></th>
+          <th v-if="colFieldIndex === firstColFieldHeaderIndex && rowHeaderSize > 0" :colspan="rowHeaderSize" :rowspan="colHeaderSize" class="text-right font-weight-normal text-muted">{{ getNumOfCells() }} cells</th>
           <!-- Column headers -->
           <th v-for="(col, colIndex) in cols" :key="JSON.stringify(col)" :colspan="spanSize(cols, colFieldIndex, colIndex)" v-if="spanSize(cols, colFieldIndex, colIndex) !== 0">
             <slot v-if="colField.headerSlotName" :name="colField.headerSlotName" v-bind:value="col[colFieldIndex]">
