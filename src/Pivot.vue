@@ -67,7 +67,6 @@
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
       </div>
-
     </div>
   </div>
 </template>
@@ -76,10 +75,12 @@
 import PivotTable from './PivotTable.vue'
 import naturalSort from 'javascript-natural-sort'
 import Draggable from 'vuedraggable'
+import { VBTooltip } from 'bootstrap-vue'
 
 export default {
-  name: 'vue-pivot',
+  name: 'Pivot',
   components: { PivotTable, Draggable },
+  directives: { 'b-tooltip': VBTooltip },
   model: {
     prop: 'fields',
     event: 'change'
