@@ -31,8 +31,7 @@
 </template>
 
 <script>
-// import { Pivot } from '../../src/browser.js'
-import { Pivot } from 'vue-pivot-table-plus'
+import { Pivot } from '../src/browser'
 import data from './data'
 
 export default {
