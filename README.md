@@ -67,6 +67,7 @@ export default Vue.extend({
           getter: item => item.z,
           label: 'Z-axis'
         }],
+        fieldsOrder: {}
       },
       reducer: (sum, item) => sum + 1,
       defaultShowSettings: true,
