@@ -29,7 +29,7 @@
             </div>
           </div>
         </draggable>
-        <p v-if="internal.colFields.length === 0" class="drag-area-placeholder text-secondary">Drag fields here</p>
+        <p v-if="internal.colFields.length === 0" class="drag-area-placeholder text-secondary">{{ colsLabelText || 'Drag fields here'}}</p>
         <div v-else class="drag-area-clear-button circle-background bg-primary" v-b-tooltip:hover title="Clear column fields" @click="_resetCols"></div>
       </div>
     </div>
@@ -45,7 +45,7 @@
             </div>
           </div>
         </draggable>
-        <p v-if="internal.rowFields.length === 0" class="drag-area-placeholder text-secondary">Drag fields here</p>
+        <p v-if="internal.rowFields.length === 0" class="drag-area-placeholder text-secondary">{{ rowsLabelText || 'Drag fields here'}}</p>
         <div v-else class="drag-area-clear-button circle-background bg-primary" v-b-tooltip:hover title="Clear row fields" @click="_resetRows"></div>
       </div>
 
@@ -112,11 +112,11 @@ export default {
     },
     colsLabelText: {
       type: String,
-      default: 'Columns'
+      default: ''
     },
     rowsLabelText: {
       type: String,
-      default: 'Rows'
+      default: ''
     },
     hideSettingsText: {
       type: String,
