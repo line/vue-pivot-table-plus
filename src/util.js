@@ -1,6 +1,6 @@
 export function downloadTableWith (format, cols, colFields, rows, rowFields, rowHeaderSize, values, filename) {
   if (format !== 'tsv' && format !== 'csv') {
-    throw Error('Invalid format on downloadTable')
+    throw Error('Invalid format on downloading, only "tsv" or "csv" can be used.')
   }
   const _filename = (filename || getFilenameByDate(new Date())) + '.' + format
   const delimiter = format === 'tsv' ? '\t' : ','
