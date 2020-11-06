@@ -313,16 +313,7 @@ export default {
       })
     },
     saveTableWithText (format) {
-      switch (format) {
-      case 'csv':
-        downloadTableWith('csv', this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values, this.filename)
-        break
-      case 'tsv':
-        downloadTableWith('tsv', this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values, this.filename)
-        break
-      default:
-        break
-      }
+      downloadTableWith(format, this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values, this.filename)
     }
   },
   watch: {
