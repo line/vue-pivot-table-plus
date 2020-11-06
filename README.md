@@ -111,6 +111,7 @@ Prop | Type | Default | Description
 `cols-label-text` | `String` | `'Columns'` | Text for the columns drag area
 `hide-settings-text` | `String` | `'Hide settings'` | Text for the "hide settings" button
 `show-settings-text` | `String` | `'Show settings'` | Text for the "show settings" button
+`filename` | `String` | (Determined by datetime) | Filename for the downloading csv / tsv
 
 #### Field format
 
