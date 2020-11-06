@@ -19,6 +19,7 @@ module.exports = {
     'vue/html-indent': [1, 2],
     'camelcase': 0,
     'vue/no-use-v-if-with-v-for': 0,
-    'no-unmodified-loop-condition': 0
+    'no-unmodified-loop-condition': 0,
+    'no-irregular-whitespace': 0,
   }
 }
