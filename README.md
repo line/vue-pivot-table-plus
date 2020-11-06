@@ -24,6 +24,8 @@ The component `Pivot` has an aggregation table (referred to as `PivotTable`) fro
 
 `Pivot` has also a drag & drop user interface to configure rows/columns of a `PivotTable`.
 
+You have to `npm install` bootstrap.
+
 ```html
 <!-- App.vue (template) -->
 <template>
@@ -144,9 +146,7 @@ npm run build
 ```
 
 ## Future features
-- Change the sort order of row / column items
 - Select enable / disable of each features (reset buttons, download button, and etc.)
-- Demo application
 - More sophiscated design updates
 
 ## Framework/Plugin
