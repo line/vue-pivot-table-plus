@@ -84,7 +84,7 @@
 
 <script>
 import naturalSort from 'javascript-natural-sort'
-import { downloadTableWithTSV, downloadTableWithCSV } from './util'
+import { downloadTableWith } from './util'
 
 export default {
   props: {
@@ -111,6 +111,10 @@ export default {
     overNumOfCellsWarningText: {
       type: String,
       default: 'Too many cells. Please reduce the num of rows / cols.'
+    },
+    filename: {
+      type: String,
+      default: ''
     },
     numOfCellsLimitation: {
       type: Number,
@@ -309,16 +313,7 @@ export default {
       })
     },
     saveTableWithText (format) {
-      switch (format) {
-      case 'csv':
-        downloadTableWithCSV(this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values)
-        break
-      case 'tsv':
-        downloadTableWithTSV(this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values)
-        break
-      default:
-        break
-      }
+      downloadTableWith(format, this.cols, this.colFields, this.rows, this.rowFields, this.rowHeaderSize, this.values, this.filename)
     }
   },
   watch: {
