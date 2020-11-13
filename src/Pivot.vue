@@ -50,8 +50,9 @@
       </div>
 
       <!-- Table -->
-      <div class="col table-responsive pivottable">
+      <div class="p-0 position-relative col table-responsive pivottable">
         <pivot-table
+          :id="`pivottable-${uniqueId}`"
           ref="pivottable"
           :data="data"
           :row-fields="internal.rowFields"
@@ -70,10 +71,22 @@
             <slot name="loading"></slot>
           </template>
         </pivot-table>
+        <div ref="pivot-copied-alert" class="alert alert-secondary pivot-alert hide" @click="hideCopiedAlert">
+          Copied to clipboard
+        </div>
       </div>
 
       <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-b-tooltip:hover title="Show menu"></div>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a
+          v-clipboard
+          v-clipboard:success="onPivotTableCopied"
+          :data-clipboard-target="`#pivottable-${uniqueId}`"
+          class="dropdown-item"
+          href="#"
+        >
+          Copy table to clipboard
+        </a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
       </div>
@@ -82,6 +95,7 @@
 </template>
 
 <script>
+import Clipboard from 'clipboard'
 import PivotTable from './PivotTable.vue'
 import naturalSort from 'javascript-natural-sort'
 import Draggable from 'vuedraggable'
@@ -90,7 +104,25 @@ import { VBTooltip } from 'bootstrap-vue'
 export default {
   name: 'Pivot',
   components: { PivotTable, Draggable },
-  directives: { 'b-tooltip': VBTooltip },
+  directives: {
+    'b-tooltip': VBTooltip,
+    clipboard: {
+      bind (el, binding) {
+        if (binding.arg === 'success') {
+          el._clipboard_success = binding.value
+        } else if (binding.arg === 'error') {
+          el._clipboard_error = binding.value
+        } else {
+          const clipboard = new Clipboard(el)
+          clipboard.on('success', (e) => {
+            e.clearSelection()
+            const callback = el._clipboard_success
+            callback && callback(e)
+          })
+        }
+      }
+    }
+  },
   model: {
     prop: 'fields',
     event: 'change'
@@ -161,11 +193,14 @@ export default {
         colFields: this.fields.colFields,
         fieldsOrder: this.fields.fieldsOrder
       },
-      dragging: false
+      dragging: false,
+      uniqueId: ''
     }
   },
   created () {
     this._sortFields(this.internal.fieldsOrder)
+    // randomly selected string
+    this.uniqueId = Math.random().toString(36).substring(7)
   },
   computed: {
     dragAreaClass: function () {
@@ -239,6 +274,21 @@ export default {
         this.internal.fieldsOrder = { ...this.internal.fieldsOrder, [label]: 'desc' }
       }
       this._sortFields(this.internal.fieldsOrder)
+    },
+    onPivotTableCopied (e) {
+      this.showCopiedAlert()
+      setTimeout(this.startHideCopiedAlert, 500)
+    },
+    showCopiedAlert () {
+      this.$refs['pivot-copied-alert'].classList.remove('hide')
+    },
+    startHideCopiedAlert () {
+      this.$refs['pivot-copied-alert'].classList.add('hiding')
+      setTimeout(this.hideCopiedAlert, 1000)
+    },
+    hideCopiedAlert () {
+      this.$refs['pivot-copied-alert'].classList.remove('hiding')
+      this.$refs['pivot-copied-alert'].classList.add('hide')
     }
   }
 }
@@ -360,6 +410,7 @@ $carret-bold-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
 }
 
 .pivottable {
+  margin: 0 15px;
   & ~ .table-option-button {
     opacity: 0;
   }
@@ -380,5 +431,21 @@ $hamburger-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/
   transition: opacity 0.2s ease-out;
   border-width: 2px !important;
   left: $base-space*3 + 10rem - $border-space*3;
+}
+
+.pivot-alert {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  opacity: 0.8;
+  visibility: vislble;
+  transition: opacity 1s ease-in-out;
+  &.hiding {
+    opacity: 0;
+    visibility: visible;
+  }
+  &.hide {
+    visibility: hidden;
+  }
 }
 </style>
