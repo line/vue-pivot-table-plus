@@ -52,7 +52,6 @@
       <!-- Table -->
       <div class="p-0 position-relative col table-responsive pivottable">
         <pivot-table
-          :id="`pivottable-${uniqueId}`"
           ref="pivottable"
           :data="data"
           :row-fields="internal.rowFields"
@@ -78,15 +77,7 @@
 
       <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-b-tooltip:hover title="Show menu"></div>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a
-          v-clipboard
-          v-clipboard:success="onPivotTableCopied"
-          :data-clipboard-target="`#pivottable-${uniqueId}`"
-          class="dropdown-item"
-          href="#"
-        >
-          Copy table to clipboard
-        </a>
+        <a ref="pivot-copy-button" class="dropdown-item" href="#">Copy table to clipboard</a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
         <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
       </div>
@@ -104,25 +95,7 @@ import { VBTooltip } from 'bootstrap-vue'
 export default {
   name: 'Pivot',
   components: { PivotTable, Draggable },
-  directives: {
-    'b-tooltip': VBTooltip,
-    clipboard: {
-      bind (el, binding) {
-        if (binding.arg === 'success') {
-          el._clipboard_success = binding.value
-        } else if (binding.arg === 'error') {
-          el._clipboard_error = binding.value
-        } else {
-          const clipboard = new Clipboard(el)
-          clipboard.on('success', (e) => {
-            e.clearSelection()
-            const callback = el._clipboard_success
-            callback && callback(e)
-          })
-        }
-      }
-    }
-  },
+  directives: { 'b-tooltip': VBTooltip },
   model: {
     prop: 'fields',
     event: 'change'
@@ -193,14 +166,21 @@ export default {
         colFields: this.fields.colFields,
         fieldsOrder: this.fields.fieldsOrder
       },
-      dragging: false,
-      uniqueId: ''
+      dragging: false
     }
   },
   created () {
     this._sortFields(this.internal.fieldsOrder)
-    // randomly selected string
-    this.uniqueId = Math.random().toString(36).substring(7)
+  },
+  mounted () {
+    const self = this
+    const clipboard = new Clipboard(self.$refs['pivot-copy-button'], {
+      target: () => self.$refs.pivottable.$el
+    })
+    clipboard.on('success', (e) => {
+      e.clearSelection()
+      self.onPivotTableCopied(e)
+    })
   },
   computed: {
     dragAreaClass: function () {
