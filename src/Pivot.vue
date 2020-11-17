@@ -50,7 +50,7 @@
       </div>
 
       <!-- Table -->
-      <div class="col table-responsive pivottable">
+      <div class="p-0 position-relative col table-responsive pivottable">
         <pivot-table
           ref="pivottable"
           :data="data"
@@ -70,18 +70,25 @@
             <slot name="loading"></slot>
           </template>
         </pivot-table>
+        <transition name="copied-alert">
+          <div v-if="showCopiedAlert" class="alert alert-secondary pivot-copied-alert">
+            Copied to clipboard
+          </div>
+        </transition>
       </div>
 
       <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-b-tooltip:hover title="Show menu"></div>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
-        <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
+        <button ref="pivot-copy-button" class="dropdown-item" >Copy table to clipboard</button>
+        <button class="dropdown-item" @click="_clickedSaveButton('csv')">Save table in CSV</button>
+        <button class="dropdown-item" @click="_clickedSaveButton('tsv')">Save table in TSV</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Clipboard from 'clipboard'
 import PivotTable from './PivotTable.vue'
 import naturalSort from 'javascript-natural-sort'
 import Draggable from 'vuedraggable'
@@ -161,11 +168,22 @@ export default {
         colFields: this.fields.colFields,
         fieldsOrder: this.fields.fieldsOrder
       },
-      dragging: false
+      dragging: false,
+      showCopiedAlert: false
     }
   },
   created () {
     this._sortFields(this.internal.fieldsOrder)
+  },
+  mounted () {
+    const self = this
+    const clipboard = new Clipboard(self.$refs['pivot-copy-button'], {
+      target: () => self.$refs.pivottable.$el
+    })
+    clipboard.on('success', (e) => {
+      e.clearSelection()
+      self.onPivotTableCopied(e)
+    })
   },
   computed: {
     dragAreaClass: function () {
@@ -239,6 +257,10 @@ export default {
         this.internal.fieldsOrder = { ...this.internal.fieldsOrder, [label]: 'desc' }
       }
       this._sortFields(this.internal.fieldsOrder)
+    },
+    onPivotTableCopied () {
+      this.showCopiedAlert = true
+      setTimeout(() => { this.showCopiedAlert = false }, 700)
     }
   }
 }
@@ -360,6 +382,7 @@ $carret-bold-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/200
 }
 
 .pivottable {
+  margin: 0 15px;
   & ~ .table-option-button {
     opacity: 0;
   }
@@ -380,5 +403,19 @@ $hamburger-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/
   transition: opacity 0.2s ease-out;
   border-width: 2px !important;
   left: $base-space*3 + 10rem - $border-space*3;
+}
+
+.pivot-copied-alert {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.copied-alert-enter-active {
+  opacity: 0.6;
+}
+.copied-alert-leave-active {
+  opacity: 0;
+  transition: all 0.7s ease;
 }
 </style>

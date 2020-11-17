@@ -2,7 +2,7 @@
   "name": "vue-pivot-table-plus",
   "description": "A customized vue component for pivot table",
   "private": false,
-  "version": "0.6.2",
+  "version": "0.7.0",
   "author": "LINE Corporation",
   "license": "Apache-2.0",
   "repository": {
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "bootstrap-vue": "^2.18.1",
+    "clipboard": "^2.0.6",
     "core-js": "^2.6.11",
     "javascript-natural-sort": "^0.7.1",
     "jquery": "^3.5.1",
