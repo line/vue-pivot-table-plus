@@ -70,16 +70,18 @@
             <slot name="loading"></slot>
           </template>
         </pivot-table>
-        <div ref="pivot-copied-alert" class="alert alert-secondary pivot-alert hide" @click="hideCopiedAlert">
-          Copied to clipboard
-        </div>
+        <transition name="copied-alert">
+          <div v-if="showCopiedAlert" class="alert alert-secondary pivot-copied-alert">
+            Copied to clipboard
+          </div>
+        </transition>
       </div>
 
       <div v-if="showSettings" class="table-option-button circle-background bg-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-b-tooltip:hover title="Show menu"></div>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a ref="pivot-copy-button" class="dropdown-item" href="#">Copy table to clipboard</a>
-        <a class="dropdown-item" href="#!" @click="_clickedSaveButton('csv')">Save table in CSV</a>
-        <a class="dropdown-item" href="#!" @click="_clickedSaveButton('tsv')">Save table in TSV</a>
+        <button ref="pivot-copy-button" class="dropdown-item" >Copy table to clipboard</button>
+        <button class="dropdown-item" @click="_clickedSaveButton('csv')">Save table in CSV</button>
+        <button class="dropdown-item" @click="_clickedSaveButton('tsv')">Save table in TSV</button>
       </div>
     </div>
   </div>
@@ -166,7 +168,8 @@ export default {
         colFields: this.fields.colFields,
         fieldsOrder: this.fields.fieldsOrder
       },
-      dragging: false
+      dragging: false,
+      showCopiedAlert: false
     }
   },
   created () {
@@ -255,20 +258,9 @@ export default {
       }
       this._sortFields(this.internal.fieldsOrder)
     },
-    onPivotTableCopied (e) {
-      this.showCopiedAlert()
-      setTimeout(this.startHideCopiedAlert, 500)
-    },
-    showCopiedAlert () {
-      this.$refs['pivot-copied-alert'].classList.remove('hide')
-    },
-    startHideCopiedAlert () {
-      this.$refs['pivot-copied-alert'].classList.add('hiding')
-      setTimeout(this.hideCopiedAlert, 1000)
-    },
-    hideCopiedAlert () {
-      this.$refs['pivot-copied-alert'].classList.remove('hiding')
-      this.$refs['pivot-copied-alert'].classList.add('hide')
+    onPivotTableCopied () {
+      this.showCopiedAlert = true
+      setTimeout(() => { this.showCopiedAlert = false }, 700)
     }
   }
 }
@@ -413,19 +405,17 @@ $hamburger-svg: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/
   left: $base-space*3 + 10rem - $border-space*3;
 }
 
-.pivot-alert {
+.pivot-copied-alert {
   position: absolute;
   bottom: 1rem;
   right: 1rem;
-  opacity: 0.8;
-  visibility: vislble;
-  transition: opacity 1s ease-in-out;
-  &.hiding {
-    opacity: 0;
-    visibility: visible;
-  }
-  &.hide {
-    visibility: hidden;
-  }
+}
+
+.copied-alert-enter-active {
+  opacity: 0.6;
+}
+.copied-alert-leave-active {
+  opacity: 0;
+  transition: all 0.7s ease;
 }
 </style>
