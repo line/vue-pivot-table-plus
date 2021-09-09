@@ -48,8 +48,7 @@ export default {
           label: 'Country'
         }, {
           getter: item => item.gender,
-          label: 'Gender',
-          headerSlotName: 'genderHeader'
+          label: 'Gender'
         }],
         colFields: [{
           getter: item => item.year,
