@@ -1,7 +1,7 @@
 # vue-pivot-table-plus
 A customized vue component for pivot table.
 
-This project is modified based on [vue-pivot-table](https://github.com/MarketConnect/vue-pivot-table) to adjust its design to our products and add custom features described below.
+This project is modified based on [vue-pivot-table](https://www.npmjs.com/package/@marketconnect/vue-pivot-table) to adjust its design to our products and add custom features described below.
 
 ![vue-pivot-table screenshot](https://raw.githubusercontent.com/line/vue-pivot-table-plus/master/screenshot.png)
 
