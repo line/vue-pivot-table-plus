@@ -1,3 +1,7 @@
+# ⚠️ This repository is no longer active
+
+This repository is no longer actively maintained.
+
 # vue-pivot-table-plus
 A customized vue component for pivot table.
 
